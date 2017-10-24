@@ -1,10 +1,15 @@
 package org.oracle.imageclassification.service.impl;
 
+import java.util.Arrays;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.annotation.Resource;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import javax.persistence.Query;
+import javax.persistence.TypedQuery;
 import javax.transaction.UserTransaction;
 
 import org.oracle.imageclassification.model.Image;
@@ -13,73 +18,189 @@ import org.oracle.imageclassification.model.ModelConfig;
 import org.oracle.imageclassification.service.ImageClassificationDataService;
 
 public class ImageClassificationDataServiceImpl implements ImageClassificationDataService{
+    private static final Logger LOG = Logger.getLogger(ImageClassificationDataServiceImpl.class.getName());
+    
     @PersistenceContext(unitName = "ImageClassification")
     private EntityManager em;
     @Resource
     private UserTransaction utx;
     @Override
     public Image addImage(Image image) {
-        // TODO Auto-generated method stub
-        return null;
+        try {
+            utx.begin();
+            em.persist(image);
+            utx.commit();
+            return image;
+          } catch (Exception e) {
+            LOG.log(Level.SEVERE, e.getMessage());
+            throw new RuntimeException(e);
+          }
     }
     @Override
     public Image updateImage(Image image) {
-        // TODO Auto-generated method stub
-        return null;
+        try {
+            long imageId = image.getImageId();
+            Image oldImage = em.find(Image.class, imageId);
+            Image updatedImage = null;
+            if(oldImage != null){
+                utx.begin();
+                updatedImage = em.merge(image);
+                utx.commit();
+            }
+            
+            return updatedImage;
+          } catch (Exception ex) {
+              LOG.log(Level.SEVERE, null, ex);
+              throw new RuntimeException(ex);
+          }
     }
     @Override
     public void deleteImage(Image image) {
-        // TODO Auto-generated method stub
+        try {
+            utx.begin();
+            em.remove(image);
+            utx.commit();
+          } catch (Exception e) {
+            LOG.log(Level.SEVERE, e.getMessage());
+            throw new RuntimeException(e);
+          }
         
     }
     @Override
     public void deleteImageById(long imageId) {
-        // TODO Auto-generated method stub
+        try {
+            utx.begin();
+        Query query = em.createQuery("Delete FROM Image i where i.image_id="+imageId);
+        query.executeUpdate();
+        utx.commit();
+        } catch (Exception e) {
+          LOG.log(Level.SEVERE, e.getMessage());
+          throw new RuntimeException(e);
+        }
         
     }
     @Override
     public ImageClassification addImageClassification(ImageClassification imageClassification) {
-        // TODO Auto-generated method stub
-        return null;
+        try {
+            utx.begin();
+            em.persist(imageClassification);
+            utx.commit();
+            return imageClassification;
+          } catch (Exception e) {
+            LOG.log(Level.SEVERE, e.getMessage());
+            throw new RuntimeException(e);
+          }
     }
     @Override
     public ImageClassification updateImageClassification(ImageClassification imageClassification) {
-        // TODO Auto-generated method stub
-        return null;
+        try {
+            long imageClassificationId = imageClassification.getClassificationId();
+            ImageClassification oldImageClassification = em.find(ImageClassification.class, imageClassificationId);
+            ImageClassification updatedImageClassification = null;
+            if(oldImageClassification != null){
+                utx.begin();
+                updatedImageClassification = em.merge(imageClassification);
+                utx.commit();
+            }
+            
+            return updatedImageClassification;
+          } catch (Exception ex) {
+              LOG.log(Level.SEVERE, null, ex);
+              throw new RuntimeException(ex);
+          }
     }
     @Override
     public void deleteImageClassification(ImageClassification imageClassification) {
-        // TODO Auto-generated method stub
+        try {
+            utx.begin();
+            em.remove(imageClassification);
+            utx.commit();
+          } catch (Exception e) {
+            LOG.log(Level.SEVERE, e.getMessage());
+            throw new RuntimeException(e);
+          }
         
     }
     @Override
     public void deleteImageClassificationById(long imageClassificationId) {
-        // TODO Auto-generated method stub
+        try {
+            utx.begin();
+        Query query = em.createQuery("Delete FROM Image_CLASSIFICATION i where i.Classification_id="+imageClassificationId);
+        query.executeUpdate();
+        utx.commit();
+        } catch (Exception e) {
+          LOG.log(Level.SEVERE, e.getMessage());
+          throw new RuntimeException(e);
+        }
         
     }
     @Override
     public ModelConfig addModelConfig(ModelConfig modelConfig) {
-        // TODO Auto-generated method stub
-        return null;
+        try {
+            utx.begin();
+            em.persist(modelConfig);
+            utx.commit();
+            return modelConfig;
+          } catch (Exception e) {
+            LOG.log(Level.SEVERE, e.getMessage());
+            throw new RuntimeException(e);
+          }
     }
+    
     @Override
     public ModelConfig updateModelConfig(ModelConfig modelConfig) {
-        // TODO Auto-generated method stub
-        return null;
+        try {
+            long modelConfigId = modelConfig.getModelId();
+            ModelConfig oldModelConfig = em.find(ModelConfig.class, modelConfigId);
+            ModelConfig updatedModelConfig = null;
+            if(oldModelConfig != null){
+                utx.begin();
+                updatedModelConfig = em.merge(modelConfig);
+                utx.commit();
+            }
+            
+            return updatedModelConfig;
+          } catch (Exception ex) {
+              LOG.log(Level.SEVERE, null, ex);
+              throw new RuntimeException(ex);
+          }
     }
     @Override
     public void deleteModelConfig(ModelConfig modelConfig) {
-        // TODO Auto-generated method stub
+        try {
+            utx.begin();
+            em.remove(modelConfig);
+            utx.commit();
+          } catch (Exception e) {
+            LOG.log(Level.SEVERE, e.getMessage());
+            throw new RuntimeException(e);
+          }
         
     }
     @Override
     public void deleteModelConfigById(long modelConfigId) {
-        // TODO Auto-generated method stub
+        try {
+            utx.begin();
+        Query query = em.createQuery("Delete FROM MODEL_CONFIG i where i.Model_Id="+modelConfigId);
+        query.executeUpdate();
+        utx.commit();
+        } catch (Exception e) {
+          LOG.log(Level.SEVERE, e.getMessage());
+          throw new RuntimeException(e);
+        }
         
     }
+    
     @Override
     public List<Image> getImagesById(long... imageId) {
-        // TODO Auto-generated method stub
+        TypedQuery<Image> query = em.createQuery("SELECT * FROM IMAGE e WHERE e.id in :ids",Image.class);
+        query.setParameter("ids", Arrays.asList(imageId));
+        List<Image> resultList = query.getResultList();
+        return resultList;
+    }
+    @Override
+    public List<ModelConfig> getModelConfigs() {
+        TypedQuery<ModelConfig> query = em.createQuery("SELECT * FROM IMAGE e WHERE e.id in :ids",ModelConfig.class);
         return null;
     }
     

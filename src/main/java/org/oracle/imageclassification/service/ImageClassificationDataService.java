@@ -23,4 +23,5 @@ public interface ImageClassificationDataService {
     public void deleteModelConfigById(long modelConfigId);
     
     public List<Image> getImagesById(long ... imageId);
+    public List<ModelConfig> getModelConfigs();
 }
