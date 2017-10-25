@@ -1,6 +1,7 @@
 package org.oracle.imageclassification.util;
 
 import javax.annotation.PostConstruct;
+import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.inject.Produces;
 import javax.enterprise.inject.spi.InjectionPoint;
 
@@ -12,7 +13,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
 
-
+@ApplicationScoped
 public class PropertyProducer {
     private Properties properties;
     @Property

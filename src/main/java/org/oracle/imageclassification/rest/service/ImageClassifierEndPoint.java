@@ -15,7 +15,9 @@ import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.core.Response;
 
+import org.apache.commons.lang3.math.NumberUtils;
 import org.oracle.imageclassification.model.Image;
 import org.oracle.imageclassification.model.ImageClassification;
 import org.oracle.imageclassification.service.ImageClassificationDataService;
@@ -58,8 +60,13 @@ public class ImageClassifierEndPoint {
 	@GET
 	@Path("/image/{id}")
 	@Produces("application/json")
-	public Image getImage(@PathParam("id") String id) { 
-		return imageClassificationDataService.getImagesById(Long.parseLong(id)).get(0);
+	public Response getImage(@PathParam("id") String id) { 
+		List<Image> images =  imageClassificationDataService.getImagesById(NumberUtils.toInt(id));
+		if(images!=null && !images.isEmpty()){
+		    return Response.ok(images.get(0)).build();
+		} else {
+		    return Response.status(404).build();
+		}
 	}
 
 	/**

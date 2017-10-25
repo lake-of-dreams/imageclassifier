@@ -1,11 +1,13 @@
 package org.oracle.imageclassification.service.impl;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.annotation.Resource;
+import javax.enterprise.context.ApplicationScoped;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
@@ -17,6 +19,7 @@ import org.oracle.imageclassification.model.ImageClassification;
 import org.oracle.imageclassification.model.ModelConfig;
 import org.oracle.imageclassification.service.ImageClassificationDataService;
 
+@ApplicationScoped
 public class ImageClassificationDataServiceImpl implements ImageClassificationDataService{
     private static final Logger LOG = Logger.getLogger(ImageClassificationDataServiceImpl.class.getName());
     
@@ -192,16 +195,26 @@ public class ImageClassificationDataServiceImpl implements ImageClassificationDa
     }
     
     @Override
-    public List<Image> getImagesById(long... imageId) {
-        TypedQuery<Image> query = em.createQuery("SELECT * FROM IMAGE e WHERE e.id in :ids",Image.class);
-        query.setParameter("ids", Arrays.asList(imageId));
+    public List<Image> getImagesById(long ... imageId) {
+        TypedQuery<Image> query = em.createQuery("SELECT image FROM Image image WHERE image.imageId in :ids",Image.class);
+        List<Long> ids = new ArrayList<>();
+        for(long id : imageId){
+            ids.add(id);
+        }
+        
+        query.setParameter("ids", ids);
+        List<Image> results = new ArrayList<>();
         List<Image> resultList = query.getResultList();
-        return resultList;
+        if(resultList != null){
+            results.addAll(resultList);
+        }
+        LOG.log(Level.INFO,"coming here");
+        return results;
     }
     @Override
     public List<ModelConfig> getModelConfigs() {
-        TypedQuery<ModelConfig> query = em.createQuery("SELECT * FROM IMAGE e WHERE e.id in :ids",ModelConfig.class);
-        return null;
+        TypedQuery<ModelConfig> query = em.createQuery("SELECT modelConfig FROM ModelConfig modelConfig",ModelConfig.class);
+        return query.getResultList();
     }
     
     

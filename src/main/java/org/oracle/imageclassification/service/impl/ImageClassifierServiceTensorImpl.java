@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 
 
@@ -26,6 +27,7 @@ import org.tensorflow.Session;
 import org.tensorflow.Tensor;
 import org.tensorflow.types.UInt8;
 
+@ApplicationScoped
 public class ImageClassifierServiceTensorImpl implements ImageClassifierService {
     
     @Inject
